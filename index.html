@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>banG——班级智慧大师</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ffcc70, #ff8177, #40c9ff);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 背景图层 */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('bg.jpg') no-repeat center center;
+      background-size: cover;
+      opacity: 0.15; /* 淡化效果 */
+      z-index: 0;
+    }
+
+    .container {
+      text-align: center;
+      padding: 40px 20px;
+      max-width: 1000px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 3em;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textShine 6s linear infinite;
+      margin-bottom: 50px;
+    }
+
+    @keyframes textShine {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 280px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+    }
+
+    .card h2 {
+      font-size: 1.6em;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 12px 25px;
+      background: linear-gradient(90deg, #ff8a00, #e52e71);
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+    }
+
+    .card a:hover {
+      box-shadow: 0 0 15px rgba(255, 138, 0, 0.6);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.2em; }
+      .card { width: 90%; max-width: 320px; }
+      .card-container { flex-direction: column; align-items: center; }
+    }
+
+    #effectCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-image"></div>
+  <canvas id="effectCanvas"></canvas>
+  <div class="container">
+    <h1>banG——班级智慧大师</h1>
+    <div class="card-container">
+      <div class="card">
+        <h2>班会助手</h2>
+        <a href="https://www.coze.cn/s/b7zojnbAx-Y/" target="_blank">进入助手</a>
+      </div>
+      <div class="card">
+        <h2>安心港湾</h2>
+        <a href="http://14.103.248.148/product/llm/chat/d35t82an9jnri913chng" target="_blank">进入港湾</a>
+      </div>
+      <div class="card">
+        <h2>能人智师</h2>
+        <a href="https://ai.zhonglian.com/product/llm/chat/d34ip85tcr2pgsgo8530" target="_blank">进入智师</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('effectCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 6 + 2;
+        this.speedX = (Math.random() - 0.5) * 2;
+        this.speedY = (Math.random() - 0.5) * 2;
+        this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        this.alpha = 1;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= 0.01;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function handleParticles() {
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].alpha <= 0) {
+          particles.splice(i, 1);
+          i--;
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      handleParticles();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('mousemove', (e) => {
+      for (let i = 0; i < 5; i++) {
+        particles.push(new Particle(e.x, e.y));
+      }
+    });
+  </script>
+</body>
+</html>
